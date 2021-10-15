@@ -36,6 +36,7 @@ void main()
 {
   int halfSampleSize = sampleSize / 2;
   int medianSample = sampleSize * sampleSize / 2;
+  vec2 dxy = 1.0 / textureSize(colorTex, 0);
   float pixelsR[sampleSize * sampleSize];
   float pixelsG[sampleSize * sampleSize];
   float pixelsB[sampleSize * sampleSize];
@@ -43,7 +44,7 @@ void main()
   {
 	for (int j = 0; j < sampleSize; ++j)
 	{
-	  vec4 pixel = textureLod(colorTex, surf.texCoord + vec2(j - halfSampleSize, i - halfSampleSize), 0);
+	  vec4 pixel = textureLod(colorTex, surf.texCoord + vec2(j - halfSampleSize, i - halfSampleSize) * dxy, 0);
 	  pixelsR[j + i * sampleSize] = pixel.x;
 	  pixelsG[j + i * sampleSize] = pixel.y;
 	  pixelsB[j + i * sampleSize] = pixel.z;
