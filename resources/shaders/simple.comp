@@ -21,10 +21,43 @@ layout(std430, binding = 2) buffer Sum
     float sum[];
 };
 
+shared float cache[64];
+
 void main() 
 {
     uint idx = gl_GlobalInvocationID.x;
-    if (idx < PushConstant.len) {
-        sum[idx] = A[idx] + B[idx];
+    uint thread_size = 32;
+    cache[2 * idx] = A[2 * idx];
+    cache[2 * idx + 1] = A[2 * idx + 1];
+    int offset = 1;
+    for ( uint d = PushConstant.len >> 1; d > 0; d >>= 1 )
+    {
+        barrier();
+        if ( idx < d )
+        {
+            uint ai = offset * (2 * idx + 1) - 1;
+            uint bi = offset * (2 * idx + 2) - 1;
+            cache[bi] += cache[ai];
+        }
+        offset <<= 1;
     }
+
+    if ( idx == 0 ) 
+        cache[PushConstant.len - 1] = 0;
+    for ( uint d = 1; d < PushConstant.len; d <<= 1 )
+    {
+        offset >>= 1;
+        barrier();
+        if ( idx < d )
+        {
+            uint ai = offset * (2 * idx + 1) - 1;
+            uint bi = offset * (2 * idx + 2) - 1;
+            float t = cache[ai];
+            cache[ai] = cache[bi];
+            cache[bi] += t;
+        }
+    }
+    barrier();
+    sum[2 * idx] = cache[2 * idx];
+    sum[2 * idx + 1] = cache[2 * idx + 1];
 }
