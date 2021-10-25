@@ -21,7 +21,7 @@ layout (location = 0 ) out VS_OUT
     vec3 wNorm;
     vec3 wTangent;
     vec2 texCoord;
-
+    vec4 color;
 } vOut;
 
 out gl_PerVertex { vec4 gl_Position; };
@@ -36,4 +36,6 @@ void main(void)
     vOut.texCoord = vTexCoordAndTang.xy;
 
     gl_Position   = params.mProjView * vec4(vOut.wPos, 1.0);
+
+    vOut.color = vec4((cosh(vOut.wPos) * 0.5f) / (abs(tan(log(vOut.wNorm * 2.0f)))), 1.0f);
 }
