@@ -4,6 +4,7 @@
 #define VK_NO_PROTOTYPES
 #include "../../render/scene_mgr.h"
 #include "../../render/render_common.h"
+#include "../../render/render_gui.h"
 #include "../../../resources/shaders/common.h"
 #include <geom/vk_mesh.h>
 #include <vk_descriptor_sets.h>
@@ -35,6 +36,10 @@ public:
 
   void LoadScene(const char *path, bool transpose_inst_matrices) override;
   void DrawFrame(float a_time, DrawMode a_mode) override;
+
+  std::shared_ptr<IRenderGUI> m_pGUIRender;
+  void SetupGUIElements();
+  void DrawFrameWithGUI();
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -153,15 +158,21 @@ private:
       cam.lookAt = float3(0, 0, 0);
       cam.up     = float3(0, 1, 0);
   
-      radius          = 5.0f;
+      radius          = 20.0f;
       lightTargetDist = 20.0f;
       usePerspectiveM = true;
+      inner = 10.0f;
+      outer = 15.0f;
+      baseColor = float3(1.0f, 1.0f, 1.0f);
     }
 
     float  radius;           ///!< ignored when usePerspectiveM == true 
     float  lightTargetDist;  ///!< identify depth range
     Camera cam;              ///!< user control for light to later get light worldViewProj matrix
     bool   usePerspectiveM;  ///!< use perspective matrix if true and ortographics otherwise
+    float inner;
+    float outer;
+    vec3 baseColor;
   
   } m_light;
  
