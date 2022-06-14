@@ -21,6 +21,7 @@ layout(binding = 0, set = 0) uniform AppData
 };
 
 layout (binding = 1) uniform sampler2D shadowMap;
+layout (binding = 2) uniform sampler2D vsm;
 
 void main()
 {
@@ -29,7 +30,20 @@ void main()
   const vec2 shadowTexCoord    = posLightSpaceNDC.xy*0.5f + vec2(0.5f, 0.5f);  // just shift coords from [-1,1] to [0,1]               
     
   const bool  outOfView = (shadowTexCoord.x < 0.0001f || shadowTexCoord.x > 0.9999f || shadowTexCoord.y < 0.0001f || shadowTexCoord.y > 0.9999f);
-  const float shadow    = ((posLightSpaceNDC.z < textureLod(shadowMap, shadowTexCoord, 0).x + 0.001f) || outOfView) ? 1.0f : 0.0f;
+  float shadow = 0.0f;
+
+  if (Params.vsm)
+  {
+    const float r = posLightSpaceNDC.z;
+    const float mu = textureLod(vsm, shadowTexCoord, 0).x;
+    const float s2 = max(textureLod(vsm, shadowTexCoord, 0).y - mu * mu, 0.001f);
+    const float pmax = s2 / (s2 + (r - mu) * (r - mu));
+    shadow = max(r < mu ? 1.0f : 0.0f, pmax);
+  }
+  else
+  {
+    shadow = ((posLightSpaceNDC.z < textureLod(shadowMap, shadowTexCoord, 0).x + 0.001f) || outOfView) ? 1.0f : 0.0f;
+  }
 
   float intensity =  0.0f;
   float inner = cos(radians(Params.inner));
@@ -46,5 +60,6 @@ void main()
     if (epsilon > 0.0f)
       intensity = clamp((theta - outer) / epsilon, 0.0, 1.0);
   }
+
   out_fragColor = (lightColor*shadow + vec4(0.1f)) * vec4(Params.baseColor, 1.0f) * intensity;
 }

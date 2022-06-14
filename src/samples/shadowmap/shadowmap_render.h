@@ -104,6 +104,7 @@ private:
 
   pipeline_data_t m_basicForwardPipeline {};
   pipeline_data_t m_shadowPipeline {};
+  pipeline_data_t m_vsmPipeline{};
 
   VkDescriptorSet m_dSet = VK_NULL_HANDLE;
   VkDescriptorSetLayout m_dSetLayout = VK_NULL_HANDLE;
@@ -137,8 +138,11 @@ private:
   //std::shared_ptr<vk_utils::RenderableTexture2D> m_pShadowMap;
   std::shared_ptr<vk_utils::RenderTarget>        m_pShadowMap2;
   uint32_t                                       m_shadowMapId = 0;
+  std::shared_ptr<vk_utils::RenderTarget>        m_pVsm;
+  uint32_t                                       m_vsmId = 0;
   
   VkDeviceMemory        m_memShadowMap = VK_NULL_HANDLE;
+  VkDeviceMemory        m_memVsm = VK_NULL_HANDLE;
   VkDescriptorSet       m_quadDS; 
   VkDescriptorSetLayout m_quadDSLayout = nullptr;
 
@@ -175,6 +179,8 @@ private:
     vec3 baseColor;
   
   } m_light;
+
+  bool m_vsm = false;
  
   void DrawFrameSimple();
 

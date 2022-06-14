@@ -30,6 +30,7 @@ struct UniformParams
   float radius;
   float inner;
   float outer;
+  bool vsm;
 };
 
 #endif //VK_GRAPHICS_BASIC_COMMON_H
