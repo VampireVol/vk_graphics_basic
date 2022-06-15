@@ -181,6 +181,7 @@ private:
   } m_light;
 
   bool m_vsm = false;
+  bool m_normalColor = false;
  
   void DrawFrameSimple();
 

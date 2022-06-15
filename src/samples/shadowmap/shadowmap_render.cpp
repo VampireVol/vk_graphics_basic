@@ -310,6 +310,7 @@ void SimpleShadowmapRender::UpdateUniformBuffer(float a_time)
   m_uniforms.radius = m_light.radius;
   m_uniforms.baseColor = m_light.baseColor;
   m_uniforms.vsm = m_vsm;
+  m_uniforms.normalColor = m_normalColor;
   memcpy(m_uboMappedMem, &m_uniforms, sizeof(m_uniforms));
 }
 
@@ -701,8 +702,10 @@ void SimpleShadowmapRender::SetupGUIElements()
     ImGui::SliderFloat("Outer angle, deg", &m_light.outer, -180.0f, 180.0f);
     ImGui::ColorEdit3("Base color", m_light.baseColor.M);
     ImGui::Checkbox("VSM", &m_vsm);
+    ImGui::Checkbox("Normal color", &m_normalColor);
     ImGui::NewLine();
-
+    const char* items[] = { "None", "Gray", "Gray with red", "Gray with green", "Gray with blue", "Inverse", "Sepia", "Uncharted 2 TMO", "Uncharted 2 Filmic"};
+    ImGui::Combo("Tone mapping", &m_uniforms.effectType, items, IM_ARRAYSIZE(items));
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
     ImGui::NewLine();
